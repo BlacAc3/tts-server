@@ -37,7 +37,7 @@ def generate_speech_groq(text, voice, output_file_path):
 def generate_speech_gtts(text, output_file_path):
     print("Using gTTS service")
     try:
-        tts = gTTS(text="Hello, how can I help you?", lang='en')
+        tts = gTTS(text, lang='en')
         tts.save(output_file_path)
     except Exception as e:
         print(f"Error generating speech with gTTS: {str(e)}")
