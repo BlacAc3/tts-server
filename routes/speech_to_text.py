@@ -1,7 +1,11 @@
 from flask import Blueprint, request, jsonify
 from services.stt_service import transcribe_audio
 from utils.file_helpers import save_temp_file, allowed_file
+from werkzeug.datastructures import FileStorage
+from io import BytesIO
 from config import Config
+
+import os
 
 stt_bp = Blueprint('speech_to_text', __name__)
 
@@ -12,10 +16,20 @@ def speech_to_text():
     Accepts audio files in oga, ogg, mp3, wav formats
     """
     # Check if the post request has the file part
-    if 'file' not in request.files:
-        return jsonify({"error": "No file part"}), 400
+    binary_data = request.get_data()  # or request.data
+        # Now you have af ess to the raw bytes
+        # This line accesses storage on the server by opening a file on the local filesystem
+    with open(os.path.join(Config.UPLOAD_FOLDER, 'received_file.mp3'), 'wb') as f:
+        f.write(binary_data)
 
-    file = request.files['file']
+
+    file_like = BytesIO(binary_data)
+    file = FileStorage(
+        stream=file_like,
+        filename="received_file.mp3",     # You can set this dynamically if needed
+        content_type="application/octet-stream"
+    )
+    print(file.filename)
 
     if file.filename == '':
         return jsonify({"error": "No file selected"}), 400
@@ -53,7 +67,6 @@ def process_audio_file(file):
         # Return the transcription
         return jsonify({
             "text": transcription.text,
-            "full_response": transcription
         })
 
     except Exception as e:

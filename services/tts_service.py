@@ -14,13 +14,19 @@ def generate_speech(text, voice, output_file_path):
     """
     client = get_groq_client()
 
-    response = client.audio.speech.create(
-        model="playai-tts",
-        voice=voice,
-        response_format="wav",
-        input=text,
-    )
+    try:
+        response = client.audio.speech.create(
+            model="playai-tts",
+            voice=voice,
+            response_format="wav",
+            input=text,
+        )
 
-    response.stream_to_file(output_file_path)
+        print(dir(response))
+        print(response.write_to_file(output_file_path))
 
-    return output_file_path
+
+        return output_file_path
+    except Exception as e:
+        print(f"Error generating speech: {str(e)}")
+        raise
