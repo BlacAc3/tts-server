@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify, send_file
-from services.tts_service import generate_speech
+from services.tts_service import generate_speech_groq, generate_speech_gtts
 from werkzeug.utils import secure_filename
 import os
 import time
@@ -19,6 +19,7 @@ def text_to_speech():
     data = request.get_json()
     text = data.get('text')
     voice = data.get('voice', 'Aaliyah-PlayAI')  # Default voice
+    service = data.get('service',  'gtts')
 
     if not text:
         return jsonify({"error": "No text provided"}), 400
@@ -31,7 +32,10 @@ def text_to_speech():
         )
 
         # Generate speech using service
-        generate_speech(text, voice, output_file)
+        if service.lower() == 'gtts':
+            generate_speech_gtts(text, output_file)
+        else:
+            generate_speech_groq(text, voice, output_file)
 
         return send_file(output_file, as_attachment=True, download_name="speech.wav")
 
