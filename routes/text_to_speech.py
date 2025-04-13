@@ -19,7 +19,7 @@ def text_to_speech():
     data = request.get_json()
     text = data.get('text')
     voice = data.get('voice', 'Aaliyah-PlayAI')  # Default voice
-    service = data.get('service',  'gtts')
+
 
     if not text:
         return jsonify({"error": "No text provided"}), 400
@@ -32,10 +32,7 @@ def text_to_speech():
         )
 
         # Generate speech using service
-        if service.lower() == 'gtts':
-            generate_speech_gtts(text, output_file)
-        else:
-            generate_speech_groq(text, voice, output_file)
+        generate_speech_groq(text, voice, output_file)
 
         return send_file(output_file, as_attachment=True, download_name="speech.wav")
 

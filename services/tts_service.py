@@ -31,6 +31,7 @@ def generate_speech_groq(text, voice, output_file_path):
         return output_file_path
     except Exception as e:
         print(f"Error generating speech with groq: {str(e)}")
+        generate_speech_gtts(text,output_file_path)
         raise
 
 
